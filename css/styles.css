@@ -1,0 +1,44 @@
+.navbar {
+  background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%) !important;
+  box-shadow: 0 4px 16px rgba(78, 84, 200, 0.15);
+  border-radius: 0 0 18px 18px;
+  padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #fff !important;
+  letter-spacing: 1px;
+}
+
+.navbar-nav .nav-link {
+  color: #e0e0e0 !important;
+  margin-right: 0.75rem;
+  transition: color 0.2s, background 0.2s;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:hover {
+  color: #fff !important;
+  background: rgba(255,255,255,0.12);
+}
+
+.navbar-nav .nav-link.disabled {
+  color: #bdbdbd !important;
+  opacity: 0.7;
+}
+
+.navbar-toggler {
+  border: none;
+  background: #fff;
+  border-radius: 6px;
+}
+
+@media (max-width: 991.98px) {
+  .navbar {
+    border-radius: 0;
+  }
+}
