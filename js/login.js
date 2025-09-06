@@ -1,4 +1,4 @@
-document.querySelector(".btn").addEventListener("click", function() {
+document.getElementById("loginBtn").addEventListener("click", function() {
   let email = document.getElementById("email").value;
   let password = document.getElementById("pswd").value;
 
@@ -19,6 +19,7 @@ document.querySelector(".btn").addEventListener("click", function() {
   //reguide the user to dashboard
   if (isAuthenticated) {
     alert("Login Successful! Redirecting to dashboard....");
+    setCookie("loggedInUser", email, 1);
     window.location.href = "dashboard.html";
   } else {
     alert("Invalid email or password. Please try again or SignUp first.");
