@@ -140,4 +140,15 @@ h2 {
   background-color: #0b7a45; /* darker green on hover */
 }
 
+a {
+  color :white;
+  text-decoration: none;
+}
+
+a :visited {
+  color :white;
+}
+
+
+
 

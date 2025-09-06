@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root{
+  --green-1: #042613;  
+  --green-2: #0f7a43;  
+  --green-3: #4fe89b; 
+  --card-shadow: rgba(6, 30, 14, 0.14);
+}
+
+
+* { box-sizing: border-box; }
+body {
+  font-family: "Poppins", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #042613 0%, #0f7a43 45%, #7ffea8 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #0b2f1f;
+  /* leave space for fixed navbar */
+  padding-top: 78px;
+}
+
+/* Navbar */
+.navbar {
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  height: 68px;
+}
+.navbar-brand {
+  font-weight: 700;
+  color: #e6fff0 !important;
+}
+.navbar .navbar-text {
+  color: rgba(255,255,255,0.9);
+}
+
+.container {
+  max-width: 1200px;
+}
+
+/* Cards */
+.card {
+  border-radius: 14px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 14px 40px var(--card-shadow);
+}
+
+/* Card bodies have a subtle frosted white look (good contrast vs green bg) */
+.card .card-body {
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+  color: #083525;
+  padding: 1.25rem;
+}
+
+/* Summary cards */
+.card .card-title {
+  font-weight: 600;
+  color: #2d5b46;
+}
+.summary-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-top: 0.4rem;
+}
+#balanceAmount { color: var(--green-1); }
+#incomeAmount  { color: #0b934e; }
+#expenseAmount { color: #e84a4a; }
+
+/* Chart cards - give enough height */
+.card .card-body canvas {
+  width: 100% !important;
+  height: 260px !important;
+}
+
+/* Add Transaction form styling */
+#transactionForm .form-control {
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  box-shadow: none;
+  padding: .6rem .9rem;
+}
+#transactionForm .form-control:focus {
+  border-color: var(--green-2);
+  box-shadow: 0 8px 24px rgba(15,122,67,0.08);
+  outline: none;
+}
+#transactionForm .btn {
+  background: linear-gradient(90deg, var(--green-2), var(--green-3));
+  border: none;
+  color: white;
+  padding: .6rem .8rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(15,122,67,0.14);
+}
+#transactionForm .btn:hover { transform: translateY(-1px); }
+
+/* Transaction table styles */
+.table {
+  background: transparent;
+  margin-bottom: 0;
+}
+.table thead th {
+  border-bottom: 0;
+  font-weight: 600;
+  color: #394b40;
+}
+.table tbody tr {
+  background: rgba(255,255,255,0.98);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+}
+.table tbody td {
+  vertical-align: middle;
+  border-top: 0;
+  padding: .95rem;
+}
+
+/* action buttons look */
+.action-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #225d3a;
+  padding: .25rem .5rem;
+}
+.action-btn.delete { color: #c12b2b; }
+
+/* Responsive tweaks */
+@media (max-width: 991px) {
+  body { padding-top: 110px; }
+  .card .card-body canvas { height: 220px !important; }
+}
+
+/* small utilities */
+.muted { color: #6b6b6b; font-size: .95rem; }
+.center { text-align:center; }
+
+/* added floating effect to the whole container */
+.container { transform: translateY(-6px); }
