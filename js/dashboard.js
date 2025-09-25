@@ -1,3 +1,5 @@
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const currentUser = getCookie("loggedInUser");
 
@@ -18,6 +20,71 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "index.html";
   });
 });
+
+let expenseChart; //gloabal reference for the charts
+
+function renderExpenseChart(categories, amounts) {
+  const ctx = document.getElementById("expensesChart").getContext("2d");
+
+  //destroy the prev version
+  if (expenseChart) {
+    expenseChart.destroy();
+  }
+
+  expenseChart = new Chart(ctx, {
+    type : "pie",
+    data: {
+      labels : categories,
+      datasets: [{
+        label : "Expenses by Category",
+        data : amounts,
+        backgroundColor : [
+          "#FF6384", "#36A2EB", "#FFCE56",
+          "#4BC0C0", "#9966FF", "#FF9F40"
+        ]
+      }]
+    },
+    options : {
+      responsive : true,
+      plugins : {
+        legend : { position: "bottom" },
+        title : {display: true, text: "Expenses by Category"}
+      }
+    }
+  });
+}
+
+//Monthly income vs expense
+let barChart;
+function renderMonthlyBarChart(months, incomeData, expenseData) {
+  if (barChart) barChart.destroy();
+
+  barChart = new Chart(document.getElementById("incomeExpenseChart"), {
+    type : "bar",
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label : "Income",
+          data: incomeData,
+          backgroundColor: "rgba(54, 162, 235, 0.7)"
+        },
+        {
+          label: "Expense",
+          data: expenseData,
+          backgroundColor: "rgba(255, 99, 132, 0.7)"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend : {position : "top"},
+        title: { display: true, text: "Monthly Income vs Expenses"}
+      }
+    }
+  });
+}
 
 
 //Loader function for data
@@ -49,6 +116,41 @@ function loadTransaction(userEmail) {
     `;
     tableBody.appendChild(row);
   }); 
+  // Category totals using a map
+  let categoryTotals = new Map();
+  //we store the amount per category
+  transactions.forEach(tx => {
+    if (tx.type == "Expense") {
+      let prev = categoryTotals.get(tx.category) || 0;
+      categoryTotals.set(tx.category, prev + tx.amount);
+    }
+  });
+
+  let categories = [...categoryTotals.keys()]; //charts understand only arrays
+  let amounts = [...categoryTotals.values()];
+
+  //monthly expense vs income
+  let monthlyTotals = new Map();
+  transactions.forEach(tx => {
+    let month = new Date(tx.date).toLocaleString("default", {month: "short"});
+
+    if (!monthlyTotals.has(month)) {
+      monthlyTotals.set(month, {income : 0, expense: 0});
+    }
+
+    let current = monthlyTotals.get(month);
+    if (tx.type == "Income") {
+      current.income += tx.amount;
+    } else {
+      current.expense += tx.amount;
+    }
+
+    monthlyTotals.set(month, current);
+  });
+  let months = [...monthlyTotals.keys()]; 
+  let incomeData = [...monthlyTotals.values()].map(v => v.income);  
+  let expenseData = [...monthlyTotals.values()].map(v => v.expense); 
+
     
 
 
@@ -59,7 +161,8 @@ function loadTransaction(userEmail) {
   //event listeners after render
   attachDeleteListeners(userEmail);
   attachEditListeners(userEmail);
-
+  renderExpenseChart(categories, amounts);
+  renderMonthlyBarChart(months, incomeData, expenseData);
 }
 
 // Logic for deleting transaction

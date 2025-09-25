@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Groups - Expensify</title>
+  <link rel="stylesheet" href="/css/dashboard_style.css">
+
+</head>
+<body>
+  <nav>
+    <h2>Groups</h2>
+    <a href="dashboard.html">Back to Dashboard</a>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+
+  <main class="groups-container">
+    <section>
+      <h3>Create a New Group</h3>
+      <div class="input-row">
+        <input type="text" id="groupName" placeholder="Group Name">
+        <button id="createGroupBtn">Create Group</button>
+      </div>
+    </section>
+
+    <section>
+      <h3>Your Groups</h3>
+      <ul id="groupList"></ul>
+    </section>
+
+    <section id="groupDetails" style="display:none;">
+      <h3 id="currentGroupName"></h3>
+      
+      <h4>Add Member</h4>
+      <div class="input-row">
+        <input type="text" id="memberName" placeholder="Member Name">
+        <button id="addMemberBtn">Add Member</button>
+      </div>
+
+      <h4>Add Expense</h4>
+      <div class="input-row">
+        <input type="text" id="expenseDesc" placeholder="Expense Description">
+        <input type="number" id="expenseAmount" placeholder="Amount">
+        <input type="text" id="expensePaidBy" placeholder="Paid By">
+        <button id="addExpenseBtn">Add Expense</button>
+      </div>
+
+      <h4>Balances</h4>
+      <ul id="balanceList"></ul>
+    </section>
+  </main>
+  <script src="/js/utils.js"></script>
+  <script src="/js/groups.js"></script>
+  <script src="/js/groupsPage.js"></script>
+</body>
+</html>
