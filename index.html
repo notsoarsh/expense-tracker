@@ -10,6 +10,9 @@
 </head>
 
 <body>
+  <div id="app-loader" class="loader-overlay">
+  <div class="spinner"></div>
+</div>
   <div class="main-form">
     <div class="login-box">
       <img src="/assets/logo.jpg" alt="Logo" class="logo">
@@ -37,6 +40,14 @@
       </form>
     </div>
   </div>
+  <div id="loader-overlay" class="loader-overlay" style="display:none;">
+    <div class="loader-container">
+      <div class="spinner">
+        <p id="loader-message"></p>
+      </div>
+    </div>
+  </div>
+  <script src="/js/loader.js"></script>
   <script src="/js/login.js"></script>
 </body>
 

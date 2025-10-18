@@ -2,7 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const currentUser = getCookie("loggedInUser");
-
+  showLoader();
   if (!currentUser) {
     alert("Session expired, please login again.");
     window.location.href = "index.html";
@@ -12,12 +12,17 @@ document.addEventListener("DOMContentLoaded", () => {
   //display email
   document.getElementById("userEmail").textContent = `Welcome, ${currentUser}`;
 
-  loadTransaction(currentUser);
+  setTimeout(() => {
+    loadTransaction(currentUser);
+    hideLoader();
+  }, 500);
 
   document.getElementById("logoutBtn").addEventListener("click", () =>{
+    showLoader();
     deleteCookie("loggedInUser");
-    alert("Logged out successfully.");
-    window.location.href = "index.html";
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 300);
   });
 });
 
@@ -223,7 +228,7 @@ function attachEditListeners(userEmail) {
 
 function addTransactionHandler(e) {
   e.preventDefault();
-
+   showLoader();
   const desc = document.getElementById("desc").value;
   const amount = document.getElementById("amount").value;
   const type = document.getElementById("type").value;
@@ -241,6 +246,10 @@ function addTransactionHandler(e) {
 
   loadTransaction(currentUser);
   document.getElementById("transactionForm").reset();
+
+  setTimeout(() => {
+    hideLoader();
+  }, 300);
 }
 
 document.getElementById("transactionForm").onsubmit = addTransactionHandler;

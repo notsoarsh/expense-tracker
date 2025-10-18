@@ -1,5 +1,5 @@
 // Constructor Function for Users
-function User(email, password) { 
+function User(email, password) {
   this.email = email;
   this.password = password;
 }
@@ -22,7 +22,7 @@ document.querySelector(".signup-btn").addEventListener("click", function () {
 
   //if user already exists
   let users = JSON.parse(localStorage.getItem("users")) || [];
-  let existingUser = users.find(user => user.email === email);
+  let existingUser = users.find((user) => user.email === email);
 
   if (existingUser) {
     alert("User already exists please try again.");
@@ -36,4 +36,20 @@ document.querySelector(".signup-btn").addEventListener("click", function () {
 
   alert("Signup successful! Redirecting to login...");
   window.location.href = "index.html";
-})
+});
+
+document.querySelectorAll(".toggle").forEach((toggle) => {
+  toggle.addEventListener("click", function () {
+    console.log("Toggle clicked");
+    //find the previous sibling for this
+    const inputPassword = this.previousElementSibling;
+    //just toggle the attribute from password to text
+    if (inputPassword.type === "password") {
+      inputPassword.type = "text";
+      this.textContent = "🙈";
+    } else {
+      inputPassword.type = "password";
+      this.textContent = "👁️";
+    }
+  });
+});

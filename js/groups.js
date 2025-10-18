@@ -2,7 +2,7 @@
 
 class Expense {
   constructor(description, amount, paidBy) {
-    this.desription = description;
+    this.description = description;
     this.amount = parseFloat(amount);
     this.paidBy = paidBy; //member name
   }
@@ -34,11 +34,11 @@ class Group {
 
     let balances = new Map();
     this.members.forEach(m => balances.set(m, 0));
-
+    // Each payer gets credited their payments
     this.expenses.forEach(e => {
       balances.set(e.paidBy, balances.get(e.paidBy) + e.amount);
     });
-
+    // Everyone owes their equal share
     this.members.forEach(m => {
       balances.set(m, balances.get(m) - share);
     });
