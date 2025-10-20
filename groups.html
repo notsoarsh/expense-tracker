@@ -2,58 +2,98 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Groups - Expensify</title>
-  <link rel="stylesheet" href="/css/dashboard_style.css">
-
+  <link rel="stylesheet" href="css/dashboard_style.css">
+  <link rel="stylesheet" href="css/toast.css">
 </head>
 <body>
   <div id="app-loader" class="loader-overlay">
-  <div class="spinner"></div>
-</div>
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Navbar -->
   <nav>
-    <h2>Groups</h2>
-    <a href="dashboard.html">Back to Dashboard</a>
-    <button id="logoutBtn">Logout</button>
+    <h2>Expensify - Groups</h2>
+    <div style="display: flex; gap: 15px; align-items: center;">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="#" id="inviteIndicator">Invites (0)</a>
+      <span style="color: white;" id="userEmail">Welcome, User</span>
+      <button id="logoutBtn">Logout</button>
+    </div>
   </nav>
 
-  <main class="groups-container">
+  <div class="groups-container">
+
+    <!-- Create Group Section -->
     <section>
-      <h3>Create a New Group</h3>
-      <div class="input-row">
-        <input type="text" id="groupName" placeholder="Group Name">
-        <button id="createGroupBtn">Create Group</button>
-      </div>
+      <h3>Create New Group</h3>
+      <form id="createGroupForm">
+        <div class="input-row">
+          <input type="text" id="groupName" placeholder="Group Name" required>
+          <button type="submit" class="btn-primary">Create Group</button>
+        </div>
+      </form>
     </section>
 
+    <!-- Add Expense Section -->
+    <section>
+      <h3>Add Expense</h3>
+      <form id="addExpenseForm">
+        <div style="display: grid; gap: 10px; margin-bottom: 15px;">
+          <select id="expenseGroupSelect" required style="padding: 10px; border: 2px solid #d1fae5; border-radius: 8px; background: #f0fdf4;">
+            <option value="">-- Select Group --</option>
+          </select>
+          <input type="text" id="expenseDesc" placeholder="Description" required
+            style="padding: 10px; border: 2px solid #d1fae5; border-radius: 8px; background: #f0fdf4;">
+          <input type="number" id="expenseAmount" placeholder="Amount" step="0.01" min="0.01" required
+            style="padding: 10px; border: 2px solid #d1fae5; border-radius: 8px; background: #f0fdf4;">
+          <input type="text" id="expensePaidBy" placeholder="Paid by" step="0.01" min="0.01" required
+            style="padding: 10px; border: 2px solid #d1fae5; border-radius: 8px; background: #f0fdf4;">
+          <button type="submit" class="btn-primary">Add Expense</button>
+
+        </div>
+      </form>
+    </section>
+
+    <!-- Invite Member Section -->
+    <section>
+      <h3>Invite Member to Group</h3>
+      <form id="inviteMemberForm">
+        <div style="display: grid; gap: 10px; margin-bottom: 15px;">
+          <select id="inviteGroupSelect" required style="padding: 10px; border: 2px solid #d1fae5; border-radius: 8px; background: #f0fdf4;">
+            <option value="">-- Select Group --</option>
+          </select>
+          <input type="email" id="inviteEmail" placeholder="Member Email" required
+            style="padding: 10px; border: 2px solid #d1fae5; border-radius: 8px; background: #f0fdf4;">
+          <button type="submit" class="btn-primary">Send Invite</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- View Invites Section -->
+    <section>
+      <h3>Your Invitations</h3>
+      <button type="button" id="viewInvitesBtn" class="btn-primary" style="width: 100%; margin-bottom: 20px;">
+        View Pending Invites
+      </button>
+      <div id="invitesList"></div>
+    </section>
+
+    <!-- Groups List -->
     <section>
       <h3>Your Groups</h3>
-      <ul id="groupList"></ul>
+      <div id="groupsList"></div>
     </section>
 
-    <section id="groupDetails" style="display:none;">
-      <h3 id="currentGroupName"></h3>
-      
-      <h4>Add Member</h4>
-      <div class="input-row">
-        <input type="text" id="memberName" placeholder="Member Name">
-        <button id="addMemberBtn">Add Member</button>
-      </div>
+  </div>
 
-      <h4>Add Expense</h4>
-      <div class="input-row">
-        <input type="text" id="expenseDesc" placeholder="Expense Description">
-        <input type="number" id="expenseAmount" placeholder="Amount">
-        <input type="text" id="expensePaidBy" placeholder="Paid By">
-        <button id="addExpenseBtn">Add Expense</button>
-      </div>
+  <!-- Scripts in correct order -->
+  <script src="js/utils.js"></script>
+  <script src="js/loader.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/groups.js"></script>
+  <script src="js/groupsPage.js"></script>
 
-      <h4>Balances</h4>
-      <ul id="balanceList"></ul>
-    </section>
-  </main>
-  <script src="/js/utils.js"></script>
-  <script src="/js/loader.js"></script>
-  <script src="/js/groups.js"></script>
-  <script src="/js/groupsPage.js"></script>
 </body>
 </html>

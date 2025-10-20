@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/toast.css">
+
   
 </head>
 
@@ -18,7 +20,7 @@
       <img src="/assets/logo.jpg" alt="Logo" class="logo">
       <h2>Welcome to EXPENSIFY ! </h2>
       <p class="subtitle"> Please login/signup to continue</p>
-      <form>
+      <form id="signupForm">
         <div class="input-group">
           <input type="email" id="email" placeholder=" &#9993; Email" required>
         </div>
@@ -27,7 +29,7 @@
           <span class="toggle">👁️</span>
         </div>
         <div class="input-group">
-          <input type="password" id="confirm-pswd" placeholder=" &#128274; Confirm Password" required>
+          <input type="password" id="cpswd" placeholder=" &#128274; Confirm Password" required>
           <span class="toggle">👁️</span>
         </div>
 
@@ -37,11 +39,13 @@
           </label>
           <a href="#" class="forgot">Forgot Password?</a>
         </div>
-        <button type="button" class="btn signup-btn">Sign Up</button>
+        <button type="submit" class="btn signup-btn">Sign Up</button>
       </form>
     </div>
   </div>
-
+  <script src="/js/utils.js"></script>
+  <script src="/js/loader.js"></script>
+  <script src="/js/toast.js"></script>
   <script src="/js/signup.js"></script>
 </body>
 

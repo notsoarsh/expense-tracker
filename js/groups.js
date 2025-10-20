@@ -1,16 +1,27 @@
-//Logic for groups
-
 class Expense {
   constructor(description, amount, paidBy) {
     this.description = description;
-    this.amount = parseFloat(amount);
-    this.paidBy = paidBy; //member name
+    this.amount = amount;
+    this.paidBy = paidBy;
+  }
+
+  toJSON() {
+    return {
+      description: this.description,
+      amount: this.amount,
+      paidBy: this.paidBy
+    };
+  }
+
+  static fromJSON(obj) {
+    return new Expense(obj.description, obj.amount, obj.paidBy);
   }
 }
-
 class Group {
-  constructor(name) {
+  constructor(name, createdBy) {
+    this.id = Date.now().toString() + Math.random().toString(36).substr(2, 9); // Generate unique ID
     this.name = name;
+    this.createdBy = createdBy;
     this.members = [];
     this.expenses = [];
   }
@@ -21,31 +32,56 @@ class Group {
     }
   }
 
-  addExpense(description, amount, paidBy) {
-    if (!this.members.includes(paidBy)) {
-      throw new Error(`${paidBy} is not in this group`);
+  addExpense(expenseObj) {
+    // Accept an Expense object directly
+    if (!this.members.includes(expenseObj.paidBy)) {
+      throw new Error(`${expenseObj.paidBy} is not in this group`);
     }
-    this.expenses.push(new Expense(description, amount, paidBy));
+    this.expenses.push(expenseObj);
   }
 
   calculateBalances() {
-    let total = this.expenses.reduce((sum, e) => sum +e.amount, 0);
-    let share = total / this.members.length;
-
-    let balances = new Map();
+    const balances = new Map();
     this.members.forEach(m => balances.set(m, 0));
+    if (this.members.length === 0) return balances;
+
+    const total = this.expenses.reduce((sum, e) => sum + e.amount, 0);
+    const share = total / this.members.length;
+    
     // Each payer gets credited their payments
     this.expenses.forEach(e => {
-      balances.set(e.paidBy, balances.get(e.paidBy) + e.amount);
+      balances.set(e.paidBy, (balances.get(e.paidBy) || 0) + e.amount);
     });
+    
     // Everyone owes their equal share
     this.members.forEach(m => {
-      balances.set(m, balances.get(m) - share);
+      balances.set(m, (balances.get(m) || 0) - share);
     });
 
     return balances;
   }
+
+  // Convert to plain object for storage
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      createdBy: this.createdBy,
+      members: this.members,
+      expenses: this.expenses.map(e => ({
+        description: e.description,
+        amount: e.amount,
+        paidBy: e.paidBy
+      }))
+    };
+  }
+
+  // Recreate from plain object
+  static fromJSON(obj) {
+    const group = new Group(obj.name, obj.createdBy);
+    group.id = obj.id;
+    group.members = obj.members || [];
+    group.expenses = (obj.expenses || []).map(e => new Expense(e.description, e.amount, e.paidBy));
+    return group;
+  }
 }
-//export this group object to window scope
-window.Group = Group;
-window.Expense = Expense;

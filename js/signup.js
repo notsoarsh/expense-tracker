@@ -1,41 +1,56 @@
-// Constructor Function for Users
-function User(email, password) {
-  this.email = email;
-  this.password = password;
-}
+document.getElementById("signupForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  showLoader();
 
-document.querySelector(".signup-btn").addEventListener("click", function () {
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("pswd").value;
-  let confirmPassword = document.getElementById("confirm-pswd").value;
+  setTimeout(() => {
+    let email = document.getElementById("email").value.trim().toLowerCase();
+    let password = document.getElementById("pswd").value;
+    let confirmPassword = document.getElementById("cpswd").value;
 
-  //validation logic
-  if (!email || !password || !confirmPassword) {
-    alert("Please fill all fields.");
-    return;
-  }
+    //validation logic
+    if (!email || !password || !confirmPassword) {
+      hideLoader();
+      toast.warning("Please fill in all fields!");
+      return;
+    }
 
-  if (password !== confirmPassword) {
-    alert("Passwords do not match!");
-    return;
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      hideLoader();
+      toast.error("Please enter a valid email address!");
+      return;
+    }
+    if (password.length < 6) {
+      hideLoader();
+      toast.error("Password must be atleast 6 characters or long!");
+      return;
+    }
 
-  //if user already exists
-  let users = JSON.parse(localStorage.getItem("users")) || [];
-  let existingUser = users.find((user) => user.email === email);
+    if (password !== confirmPassword) {
+      hideLoader();
+      toast.error("Password do not match!");
+      return;
+    }
 
-  if (existingUser) {
-    alert("User already exists please try again.");
-    return;
-  }
+    //if user already exists
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    let existingUser = users.find((user) => user.email.toLowerCase() === email);
 
-  //Save the new user
-  let newUser = new User(email, password);
-  users.push(newUser);
-  localStorage.setItem("users", JSON.stringify(users)); //uploaded to localstorage
+    if (existingUser) {
+      hideLoader();
+      toast.error("Email already registred! Please login.");
+      return;
+    }
+    //Store the new user in the users object
+    users.push({ email, password });
+    localStorage.setItem("users", JSON.stringify(users)); //uploaded to localstorage
 
-  alert("Signup successful! Redirecting to login...");
-  window.location.href = "index.html";
+    hideLoader();
+    toast.success("Signup successful! Redirecting to login...");
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1500);
+  }, 500);
 });
 
 document.querySelectorAll(".toggle").forEach((toggle) => {
