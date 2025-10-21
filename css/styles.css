@@ -28,7 +28,6 @@ body {
   text-align: center;
 }
 
-
 .logo {
   width: 60px;
   height: auto;
@@ -113,7 +112,6 @@ h2 {
   transition: 0.2s;
 }
 
-
 .btn:hover {
   background: #333;
 }
@@ -149,12 +147,12 @@ h2 {
 }
 
 a {
-  color :white;
+  color: white;
   text-decoration: none;
 }
 
-a :visited {
-  color :white;
+a:visited {
+  color: white;
 }
 
 .loader-overlay {
@@ -164,17 +162,11 @@ a :visited {
   width: 100%;
   height: 100%;
   /* Use your primary dark color or a semi-transparent white */
-  background: rgba(45, 80, 22, 0.8); 
+  background: rgba(45, 80, 22, 0.8);
   z-index: 9999;
   display: none; /* Hidden by default */
   justify-content: center;
   align-items: center;
-}
-
-.loader-container {
-  text-align: center;
-  color: #00ff99; /* neon green theme */
-  font-family: 'Poppins', sans-serif;
 }
 
 .spinner {
@@ -187,9 +179,10 @@ a :visited {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
-
-
-

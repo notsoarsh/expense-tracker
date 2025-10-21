@@ -55,8 +55,6 @@ document.getElementById("signupForm").addEventListener("submit", (e) => {
 
 document.querySelectorAll(".toggle").forEach((toggle) => {
   toggle.addEventListener("click", function () {
-    console.log("Toggle clicked");
-    //find the previous sibling for this
     const inputPassword = this.previousElementSibling;
     //just toggle the attribute from password to text
     if (inputPassword.type === "password") {

@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const currentUser = getCookie("loggedInUser");
   showLoader();
-  
+
   if (!currentUser) {
     toast.error("Session expired, please login again.");
     setTimeout(() => {
@@ -13,9 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("userEmail").textContent = `Welcome, ${currentUser}`;
 
   // Update pending invites indicator
-  const pendingInvites = JSON.parse(localStorage.getItem(`pendingInvites_${currentUser}`)) || [];
+  const pendingInvites =
+    JSON.parse(localStorage.getItem(`pendingInvites_${currentUser}`)) || [];
   const pendingCount = pendingInvites.length;
-  document.getElementById("inviteIndicator").textContent = `Invites (${pendingCount})`;
+  document.getElementById(
+    "inviteIndicator"
+  ).textContent = `Invites (${pendingCount})`;
 
   setTimeout(() => {
     loadGroups(currentUser);
@@ -48,7 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const newGroup = new Group(groupName, currentUser);
       newGroup.addMember(currentUser);
 
-      let groups = JSON.parse(localStorage.getItem(`groups_${currentUser}`)) || [];
+      let groups =
+        JSON.parse(localStorage.getItem(`groups_${currentUser}`)) || [];
       groups.push(newGroup.toJSON());
       localStorage.setItem(`groups_${currentUser}`, JSON.stringify(groups));
 
@@ -59,183 +63,195 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 300);
   });
 
-// Add Expense Form
-document.getElementById("addExpenseForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  showLoader();
-
-  const groupId = document.getElementById("expenseGroupSelect").value;
-  const description = document.getElementById("expenseDesc").value;
-  const amount = parseFloat(document.getElementById("expenseAmount").value);
-  const paidBy = document.getElementById("expensePaidBy").value;
-
-  if (!groupId) {
-    hideLoader();
-    toast.error("Please select a group!");
-    return;
-  }
-
-  if (!description || !amount || amount <= 0) {
-    hideLoader();
-    toast.error("Please provide valid expense details!");
-    return;
-  }
-
-  if (!paidBy) {
-    hideLoader();
-    toast.error("Please select who paid!");
-    return;
-  }
-
-  setTimeout(() => {
-    try {
-      // Get current user's groups
-      let currentUserGroups = JSON.parse(localStorage.getItem(`groups_${currentUser}`)) || [];
-      let group = currentUserGroups.find((g) => g.id === groupId);
-
-      if (!group) {
-        hideLoader();
-        toast.error("Group not found!");
-        return;
-      }
-
-      // Reconstruct as Group object
-      group = Group.fromJSON(group);
-
-      // Create and add expense
-      const expense = new Expense(description, amount, paidBy);
-      group.addExpense(expense);
-
-      // Update current user's storage
-      const groupIndex = currentUserGroups.findIndex((g) => g.id === groupId);
-      currentUserGroups[groupIndex] = group.toJSON();
-      localStorage.setItem(`groups_${currentUser}`, JSON.stringify(currentUserGroups));
-
-      // **SYNC TO ALL MEMBERS** - Update the group for all members
-      if (group.members && Array.isArray(group.members)) {
-        group.members.forEach((member) => {
-          // Get member's groups
-          let memberGroups = JSON.parse(localStorage.getItem(`groups_${member}`)) || [];
-          const memberGroupIndex = memberGroups.findIndex((g) => g.id === groupId);
-
-          if (memberGroupIndex !== -1) {
-            // Update the member's copy of this group
-            memberGroups[memberGroupIndex] = group.toJSON();
-            localStorage.setItem(`groups_${member}`, JSON.stringify(memberGroups));
-          }
-        });
-      }
-
-      // Also update creator's storage if current user is not the creator
-      if (group.createdBy !== currentUser) {
-        let creatorGroups = JSON.parse(localStorage.getItem(`groups_${group.createdBy}`)) || [];
-        const creatorGroupIndex = creatorGroups.findIndex((g) => g.id === groupId);
-        
-        if (creatorGroupIndex !== -1) {
-          creatorGroups[creatorGroupIndex] = group.toJSON();
-          localStorage.setItem(`groups_${group.createdBy}`, JSON.stringify(creatorGroups));
-        }
-      }
-
-      loadGroups(currentUser);
-      document.getElementById("addExpenseForm").reset();
-      hideLoader();
-      toast.success("Expense added successfully and synced to all members!");
-    } catch (error) {
-      console.error("Error adding expense:", error);
-      hideLoader();
-      toast.error(error.message || "Failed to add expense!");
-    }
-  }, 300);
-});
-
-  // Invite Member Form
-  document.getElementById("inviteMemberForm").addEventListener("submit", (e) => {
+  // Add Expense Form
+  document.getElementById("addExpenseForm").addEventListener("submit", (e) => {
     e.preventDefault();
-
-    const groupId = document.getElementById("inviteGroupSelect").value;
-    const inviteEmail = document.getElementById("inviteEmail").value.trim().toLowerCase();
-
-    // Validation
-    if (!groupId) {
-      toast.warning("Please select a group!");
-      return;
-    }
-
-    if (!inviteEmail) {
-      toast.warning("Please enter an email address!");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(inviteEmail)) {
-      toast.error("Please enter a valid email address!");
-      return;
-    }
-
-    if (inviteEmail === currentUser) {
-      toast.warning("You cannot invite yourself!");
-      return;
-    }
-
     showLoader();
 
-    setTimeout(() => {
-      // Check if user exists
-      const users = JSON.parse(localStorage.getItem("users")) || [];
-      const invitedUser = users.find((u) => u.email.toLowerCase() === inviteEmail);
+    const groupId = document.getElementById("expenseGroupSelect").value;
+    const description = document.getElementById("expenseDesc").value;
+    const amount = parseFloat(document.getElementById("expenseAmount").value);
+    const paidBy = document.getElementById("expensePaidBy").value;
 
-      if (!invitedUser) {
-        hideLoader();
-        toast.error("User not found! Please check the email address.");
-        return;
-      }
-
-      let groups = JSON.parse(localStorage.getItem(`groups_${currentUser}`)) || [];
-      const group = groups.find((g) => g.id === groupId);
-
-      if (!group) {
-        hideLoader();
-        toast.error("Group not found!");
-        return;
-      }
-
-      // Check if user is already a member
-      if (group.members && group.members.includes(inviteEmail)) {
-        hideLoader();
-        toast.warning("This user is already a member of the group!");
-        return;
-      }
-
-      // Check if invitation already sent
-      let pendingInvites = JSON.parse(localStorage.getItem(`pendingInvites_${inviteEmail}`)) || [];
-      const alreadyInvited = pendingInvites.some(
-        (inv) => inv.groupId === groupId && inv.from === currentUser
-      );
-
-      if (alreadyInvited) {
-        hideLoader();
-        toast.warning("Invitation already sent to this user!");
-        return;
-      }
-
-      // Create invitation
-      const invitation = {
-        groupId: groupId,
-        groupName: group.name,
-        from: currentUser,
-        to: inviteEmail,
-        date: new Date().toISOString(),
-      };
-
-      pendingInvites.push(invitation);
-      localStorage.setItem(`pendingInvites_${inviteEmail}`, JSON.stringify(pendingInvites));
-
-      document.getElementById("inviteMemberForm").reset();
+    if (!groupId) {
       hideLoader();
-      toast.success(`Invitation sent to ${inviteEmail}!`);
+      toast.error("Please select a group!");
+      return;
+    }
+
+    if (!description || !amount || amount <= 0) {
+      hideLoader();
+      toast.error("Please provide valid expense details!");
+      return;
+    }
+
+    if (!paidBy) {
+      hideLoader();
+      toast.error("Please select who paid!");
+      return;
+    }
+
+    setTimeout(() => {
+      try {
+        // Get current user's groups
+        let currentUserGroups =
+          JSON.parse(localStorage.getItem(`groups_${currentUser}`)) || [];
+        let group = currentUserGroups.find((g) => g.id === groupId);
+
+        if (!group) {
+          hideLoader();
+          toast.error("Group not found!");
+          return;
+        }
+
+        // Reconstruct as Group object
+        group = Group.fromJSON(group);
+
+        // Create and add expense
+        const expense = new Expense(description, amount, paidBy);
+        group.addExpense(expense);
+
+        // Update current user's storage
+        const groupIndex = currentUserGroups.findIndex((g) => g.id === groupId);
+        currentUserGroups[groupIndex] = group.toJSON();
+        localStorage.setItem(
+          `groups_${currentUser}`,
+          JSON.stringify(currentUserGroups)
+        );
+
+        // **SYNC TO ALL MEMBERS** - Update the group for all members
+        if (group.members && Array.isArray(group.members)) {
+          group.members.forEach((member) => {
+            // Get member's groups
+            let memberGroups =
+              JSON.parse(localStorage.getItem(`groups_${member}`)) || [];
+            const memberGroupIndex = memberGroups.findIndex(
+              (g) => g.id === groupId
+            );
+
+            if (memberGroupIndex !== -1) {
+              // Update the member's copy of this group
+              memberGroups[memberGroupIndex] = group.toJSON();
+              localStorage.setItem(
+                `groups_${member}`,
+                JSON.stringify(memberGroups)
+              );
+            }
+          });
+        }
+
+        loadGroups(currentUser);
+        document.getElementById("addExpenseForm").reset();
+        hideLoader();
+        toast.success("Expense added successfully and synced to all members!");
+      } catch (error) {
+        console.error("Error adding expense:", error);
+        hideLoader();
+        toast.error(error.message || "Failed to add expense!");
+      }
     }, 300);
   });
+
+  // Invite Member Form
+  document
+    .getElementById("inviteMemberForm")
+    .addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const groupId = document.getElementById("inviteGroupSelect").value;
+      const inviteEmail = document
+        .getElementById("inviteEmail")
+        .value.trim()
+        .toLowerCase();
+
+      // Validation
+      if (!groupId) {
+        toast.warning("Please select a group!");
+        return;
+      }
+
+      if (!inviteEmail) {
+        toast.warning("Please enter an email address!");
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(inviteEmail)) {
+        toast.error("Please enter a valid email address!");
+        return;
+      }
+
+      if (inviteEmail === currentUser) {
+        toast.warning("You cannot invite yourself!");
+        return;
+      }
+
+      showLoader();
+
+      setTimeout(() => {
+        // Check if user exists
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+        const invitedUser = users.find(
+          (u) => u.email.toLowerCase() === inviteEmail
+        );
+
+        if (!invitedUser) {
+          hideLoader();
+          toast.error("User not found! Please check the email address.");
+          return;
+        }
+
+        let groups =
+          JSON.parse(localStorage.getItem(`groups_${currentUser}`)) || [];
+        const group = groups.find((g) => g.id === groupId);
+
+        if (!group) {
+          hideLoader();
+          toast.error("Group not found!");
+          return;
+        }
+
+        // Check if user is already a member
+        if (group.members && group.members.includes(inviteEmail)) {
+          hideLoader();
+          toast.warning("This user is already a member of the group!");
+          return;
+        }
+
+        // Check if invitation already sent
+        let pendingInvites =
+          JSON.parse(localStorage.getItem(`pendingInvites_${inviteEmail}`)) ||
+          [];
+        const alreadyInvited = pendingInvites.some(
+          (inv) => inv.groupId === groupId && inv.from === currentUser
+        );
+
+        if (alreadyInvited) {
+          hideLoader();
+          toast.warning("Invitation already sent to this user!");
+          return;
+        }
+
+        // Create invitation
+        const invitation = {
+          groupId: groupId,
+          groupName: group.name,
+          from: currentUser,
+          to: inviteEmail,
+          date: new Date().toISOString(),
+        };
+
+        pendingInvites.push(invitation);
+        localStorage.setItem(
+          `pendingInvites_${inviteEmail}`,
+          JSON.stringify(pendingInvites)
+        );
+
+        document.getElementById("inviteMemberForm").reset();
+        hideLoader();
+        toast.success(`Invitation sent to ${inviteEmail}!`);
+      }, 300);
+    });
 
   // View Invites Button
   const viewInvitesBtn = document.getElementById("viewInvitesBtn");
@@ -287,13 +303,19 @@ function loadGroups(userEmail) {
 
     let balancesHTML = "";
     balances.forEach((balance, member) => {
-      const balanceClass = balance > 0 ? "text-success" : balance < 0 ? "text-danger" : "text-muted";
-      const balanceText = balance > 0 
-        ? `owes $${Math.abs(balance).toFixed(2)}` 
-        : balance < 0 
-        ? `is owed $${Math.abs(balance).toFixed(2)}` 
-        : "settled";
-      
+      const balanceClass =
+        balance > 0
+          ? "text-success"
+          : balance < 0
+          ? "text-danger"
+          : "text-muted";
+      const balanceText =
+        balance > 0
+          ? `is owed $${Math.abs(balance).toFixed(2)}`
+          : balance < 0
+          ? `owes $${Math.abs(balance).toFixed(2)}`
+          : "settled";
+
       balancesHTML += `
         <div class="balance-item">
           <strong>${member === userEmail ? "You" : member}:</strong>
@@ -311,7 +333,9 @@ function loadGroups(userEmail) {
           <div class="expense-item">
             <div>
               <strong>${expense.description}</strong>
-              <small class="text-muted">Paid by ${expense.paidBy === userEmail ? "You" : expense.paidBy}</small>
+              <small class="text-muted">Paid by ${
+                expense.paidBy === userEmail ? "You" : expense.paidBy
+              }</small>
             </div>
             <span class="expense-amount">$${expense.amount.toFixed(2)}</span>
           </div>
@@ -322,17 +346,28 @@ function loadGroups(userEmail) {
     card.innerHTML = `
       <div class="group-header">
         <h3>${group.name}</h3>
-        <span class="badge bg-primary">${group.members.length} member${group.members.length !== 1 ? "s" : ""}</span>
+        <span class="badge bg-primary">${group.members.length} member${
+      group.members.length !== 1 ? "s" : ""
+    }</span>
       </div>
       <div class="group-body">
         <div class="group-section">
           <h4>Members</h4>
           <div class="members-list">
-            ${group.members.map((m) => `<span class="member-badge">${m === userEmail ? "You" : m}</span>`).join("")}
+            ${group.members
+              .map(
+                (m) =>
+                  `<span class="member-badge">${
+                    m === userEmail ? "You" : m
+                  }</span>`
+              )
+              .join("")}
           </div>
         </div>
         <div class="group-section">
-          <h4>Total Expenses: <span class="text-primary">$${totalExpenses.toFixed(2)}</span></h4>
+          <h4>Total Expenses: <span class="text-primary">$${totalExpenses.toFixed(
+            2
+          )}</span></h4>
           ${expensesHTML}
         </div>
         <div class="group-section">
@@ -341,7 +376,9 @@ function loadGroups(userEmail) {
         </div>
       </div>
       <div class="group-footer">
-        <button class="btn btn-sm btn-danger delete-group-btn" data-group-id="${group.id}">
+        <button class="btn btn-sm btn-danger delete-group-btn" data-group-id="${
+          group.id
+        }">
           Delete Group
         </button>
       </div>
@@ -391,11 +428,12 @@ function attachDeleteGroupListeners(userEmail) {
           setTimeout(() => {
             try {
               // Get current user's groups
-              let groups = JSON.parse(localStorage.getItem(`groups_${userEmail}`)) || [];
-              
+              let groups =
+                JSON.parse(localStorage.getItem(`groups_${userEmail}`)) || [];
+
               // Find the group to delete
               const groupToDelete = groups.find((g) => g.id === groupId);
-              
+
               if (!groupToDelete) {
                 hideLoader();
                 toast.error("Group not found!");
@@ -404,15 +442,26 @@ function attachDeleteGroupListeners(userEmail) {
 
               // Remove group from current user's storage
               groups = groups.filter((g) => g.id !== groupId);
-              localStorage.setItem(`groups_${userEmail}`, JSON.stringify(groups));
+              localStorage.setItem(
+                `groups_${userEmail}`,
+                JSON.stringify(groups)
+              );
 
               // Remove group from all members' storage
-              if (groupToDelete.members && Array.isArray(groupToDelete.members)) {
+              if (
+                groupToDelete.members &&
+                Array.isArray(groupToDelete.members)
+              ) {
                 groupToDelete.members.forEach((member) => {
                   if (member !== userEmail) {
-                    let memberGroups = JSON.parse(localStorage.getItem(`groups_${member}`)) || [];
+                    let memberGroups =
+                      JSON.parse(localStorage.getItem(`groups_${member}`)) ||
+                      [];
                     memberGroups = memberGroups.filter((g) => g.id !== groupId);
-                    localStorage.setItem(`groups_${member}`, JSON.stringify(memberGroups));
+                    localStorage.setItem(
+                      `groups_${member}`,
+                      JSON.stringify(memberGroups)
+                    );
                   }
                 });
               }
@@ -420,16 +469,26 @@ function attachDeleteGroupListeners(userEmail) {
               // Remove any pending invites for this group
               const allUsers = JSON.parse(localStorage.getItem("users")) || [];
               allUsers.forEach((user) => {
-                let userInvites = JSON.parse(localStorage.getItem(`pendingInvites_${user.email}`)) || [];
+                let userInvites =
+                  JSON.parse(
+                    localStorage.getItem(`pendingInvites_${user.email}`)
+                  ) || [];
                 const originalLength = userInvites.length;
-                userInvites = userInvites.filter((inv) => inv.groupId !== groupId);
-                
+                userInvites = userInvites.filter(
+                  (inv) => inv.groupId !== groupId
+                );
+
                 if (userInvites.length !== originalLength) {
-                  localStorage.setItem(`pendingInvites_${user.email}`, JSON.stringify(userInvites));
-                  
+                  localStorage.setItem(
+                    `pendingInvites_${user.email}`,
+                    JSON.stringify(userInvites)
+                  );
+
                   // Update invite count if it's the current user
                   if (user.email === userEmail) {
-                    document.getElementById("inviteIndicator").textContent = `Invites (${userInvites.length})`;
+                    document.getElementById(
+                      "inviteIndicator"
+                    ).textContent = `Invites (${userInvites.length})`;
                   }
                 }
               });
@@ -452,7 +511,8 @@ function attachDeleteGroupListeners(userEmail) {
 
 // Display pending invites
 function displayInvites(userEmail) {
-  let invites = JSON.parse(localStorage.getItem(`pendingInvites_${userEmail}`)) || [];
+  let invites =
+    JSON.parse(localStorage.getItem(`pendingInvites_${userEmail}`)) || [];
 
   const invitesList = document.getElementById("invitesList");
   invitesList.innerHTML = "";
@@ -506,7 +566,8 @@ function attachInviteListeners(userEmail) {
       showLoader();
 
       setTimeout(() => {
-        let invites = JSON.parse(localStorage.getItem(`pendingInvites_${userEmail}`)) || [];
+        let invites =
+          JSON.parse(localStorage.getItem(`pendingInvites_${userEmail}`)) || [];
         const invite = invites[index];
 
         if (!invite) {
@@ -516,30 +577,45 @@ function attachInviteListeners(userEmail) {
         }
 
         // Add user to the group (in the creator's storage)
-        let creatorGroups = JSON.parse(localStorage.getItem(`groups_${invite.from}`)) || [];
-        const groupIndex = creatorGroups.findIndex((g) => g.id === invite.groupId);
+        let creatorGroups =
+          JSON.parse(localStorage.getItem(`groups_${invite.from}`)) || [];
+        const groupIndex = creatorGroups.findIndex(
+          (g) => g.id === invite.groupId
+        );
 
         if (groupIndex !== -1) {
           const group = Group.fromJSON(creatorGroups[groupIndex]);
-          
+
           if (!group.members.includes(userEmail)) {
             group.addMember(userEmail);
             creatorGroups[groupIndex] = group.toJSON();
-            localStorage.setItem(`groups_${invite.from}`, JSON.stringify(creatorGroups));
+            localStorage.setItem(
+              `groups_${invite.from}`,
+              JSON.stringify(creatorGroups)
+            );
 
             // Also add to user's own groups list
-            let userGroups = JSON.parse(localStorage.getItem(`groups_${userEmail}`)) || [];
+            let userGroups =
+              JSON.parse(localStorage.getItem(`groups_${userEmail}`)) || [];
             userGroups.push(group.toJSON());
-            localStorage.setItem(`groups_${userEmail}`, JSON.stringify(userGroups));
+            localStorage.setItem(
+              `groups_${userEmail}`,
+              JSON.stringify(userGroups)
+            );
           }
         }
 
         // Remove the invite
         invites.splice(index, 1);
-        localStorage.setItem(`pendingInvites_${userEmail}`, JSON.stringify(invites));
+        localStorage.setItem(
+          `pendingInvites_${userEmail}`,
+          JSON.stringify(invites)
+        );
 
         // Update invite count
-        document.getElementById("inviteIndicator").textContent = `Invites (${invites.length})`;
+        document.getElementById(
+          "inviteIndicator"
+        ).textContent = `Invites (${invites.length})`;
 
         displayInvites(userEmail);
         loadGroups(userEmail);
@@ -557,12 +633,19 @@ function attachInviteListeners(userEmail) {
       toast.confirm("Are you sure you want to reject this invitation?", () => {
         showLoader();
         setTimeout(() => {
-          let invites = JSON.parse(localStorage.getItem(`pendingInvites_${userEmail}`)) || [];
+          let invites =
+            JSON.parse(localStorage.getItem(`pendingInvites_${userEmail}`)) ||
+            [];
           invites.splice(index, 1);
-          localStorage.setItem(`pendingInvites_${userEmail}`, JSON.stringify(invites));
+          localStorage.setItem(
+            `pendingInvites_${userEmail}`,
+            JSON.stringify(invites)
+          );
 
           // Update invite count
-          document.getElementById("inviteIndicator").textContent = `Invites (${invites.length})`;
+          document.getElementById(
+            "inviteIndicator"
+          ).textContent = `Invites (${invites.length})`;
 
           displayInvites(userEmail);
           hideLoader();

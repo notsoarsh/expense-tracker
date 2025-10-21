@@ -9,12 +9,8 @@ class Expense {
     return {
       description: this.description,
       amount: this.amount,
-      paidBy: this.paidBy
+      paidBy: this.paidBy,
     };
-  }
-
-  static fromJSON(obj) {
-    return new Expense(obj.description, obj.amount, obj.paidBy);
   }
 }
 class Group {
@@ -42,19 +38,19 @@ class Group {
 
   calculateBalances() {
     const balances = new Map();
-    this.members.forEach(m => balances.set(m, 0));
+    this.members.forEach((m) => balances.set(m, 0));
     if (this.members.length === 0) return balances;
 
     const total = this.expenses.reduce((sum, e) => sum + e.amount, 0);
     const share = total / this.members.length;
-    
+
     // Each payer gets credited their payments
-    this.expenses.forEach(e => {
+    this.expenses.forEach((e) => {
       balances.set(e.paidBy, (balances.get(e.paidBy) || 0) + e.amount);
     });
-    
+
     // Everyone owes their equal share
-    this.members.forEach(m => {
+    this.members.forEach((m) => {
       balances.set(m, (balances.get(m) || 0) - share);
     });
 
@@ -68,11 +64,11 @@ class Group {
       name: this.name,
       createdBy: this.createdBy,
       members: this.members,
-      expenses: this.expenses.map(e => ({
+      expenses: this.expenses.map((e) => ({
         description: e.description,
         amount: e.amount,
-        paidBy: e.paidBy
-      }))
+        paidBy: e.paidBy,
+      })),
     };
   }
 
@@ -81,7 +77,9 @@ class Group {
     const group = new Group(obj.name, obj.createdBy);
     group.id = obj.id;
     group.members = obj.members || [];
-    group.expenses = (obj.expenses || []).map(e => new Expense(e.description, e.amount, e.paidBy));
+    group.expenses = (obj.expenses || []).map(
+      (e) => new Expense(e.description, e.amount, e.paidBy)
+    );
     return group;
   }
 }

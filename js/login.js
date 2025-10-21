@@ -15,7 +15,9 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
 
     //get the users list from localstorage
     let users = JSON.parse(localStorage.getItem("users")) || [];
-    let user = users.find((user) => user.email.toLowerCase() === email && user.password === password);
+    let user = users.find(
+      (user) => user.email.toLowerCase() === email && user.password === password
+    );
     let isAuthenticated = user !== undefined;
 
     //reguide the user to dashboard
@@ -34,19 +36,16 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
   }, 500);
 });
 
-    document.querySelectorAll(".toggle").forEach((toggle) => {
-      toggle.addEventListener("click", function () {
-        console.log("Toggle clicked")
-        //find the previous sibling for this
-        const inputPassword = this.previousElementSibling;
-        //just toggle the attribute from password to text
-        if (inputPassword.type === "password") {
-          inputPassword.type = "text";
-          this.textContent = "🙈";
-        } else {
-          inputPassword.type = "password";
-          this.textContent = "👁️";
-        }
-      });
-    });
-
+document.querySelectorAll(".toggle").forEach((toggle) => {
+  toggle.addEventListener("click", function () {
+    const inputPassword = this.previousElementSibling;
+    //just toggle the attribute from password to text
+    if (inputPassword.type === "password") {
+      inputPassword.type = "text";
+      this.textContent = "🙈";
+    } else {
+      inputPassword.type = "password";
+      this.textContent = "👁️";
+    }
+  });
+});

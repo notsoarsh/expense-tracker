@@ -26,15 +26,21 @@ class Transaction {
 
   toJSON() {
     return {
-      desc : this.desc,
-      amount : this.#amount,
-      type : this.type,
-      category : this.category,
-      date : this.date,
+      desc: this.desc,
+      amount: this.#amount,
+      type: this.type,
+      category: this.category,
+      date: this.date,
     };
   }
 
   static fromJSON(obj) {
-    return new Transaction(obj.desc, obj.amount, obj.type, obj.category, obj.date);
+    return new Transaction(
+      obj.desc,
+      obj.amount,
+      obj.type,
+      obj.category,
+      obj.date
+    );
   }
 }

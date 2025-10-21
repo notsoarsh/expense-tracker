@@ -1,13 +1,11 @@
-/**
- * Here we define the helpers for cookies
- */
-
 function setCookie(name, value, days) {
   const d = new Date();
-  d.setTime(d.getTime() + (days*24*60*60*1000));
-  const expires = "expires="+ d.toUTCString();
-  const secure = location.protocol === "https" ? ";Secure" : "";
-  document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Lax${secure}`;
+  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+  const expires = "expires=" + d.toUTCString();
+  const secure = location.protocol === "https:" ? ";Secure" : "";
+  document.cookie = `${name}=${encodeURIComponent(
+    value
+  )};${expires};path=/;SameSite=Lax${secure}`;
 }
 
 function getCookie(name) {
@@ -24,6 +22,6 @@ function getCookie(name) {
 }
 
 function deleteCookie(name) {
-   const secure = location.protocol === "https:" ? ";Secure" : "";
-   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;SameSite=Lax${secure}`;
+  const secure = location.protocol === "https:" ? ";Secure" : "";
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;SameSite=Lax${secure}`;
 }

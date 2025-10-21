@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     hideLoader();
   }, 500);
 
-  document.getElementById("logoutBtn").addEventListener("click", () =>{
+  document.getElementById("logoutBtn").addEventListener("click", () => {
     showLoader();
     deleteCookie("loggedInUser");
     toast.success("Logged out successfully!");
@@ -40,24 +40,29 @@ function renderExpenseChart(categories, amounts) {
   const noData = amounts.length === 0;
   const labels = noData ? ["No expenses"] : categories;
   const data = noData ? [1] : amounts;
-  const colors = noData ? ["e5e7eb"] : [
-    "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"
-  ];
+  const colors = noData
+    ? ["#e5e7eb"]
+    : ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
 
   expenseChart = new Chart(ctx, {
-    type : "pie",
+    type: "pie",
     data: {
       labels,
-      datasets: [{
-        label : "Expenses by Category",
-        data , backgroundColor : colors}]},
-    options : {
-      responsive : true,
-      plugins : {
-        legend : { position: "bottom" },
-        title : {display: true, text: "Expenses by Category"}
-      }
-    }
+      datasets: [
+        {
+          label: "Expenses by Category",
+          data,
+          backgroundColor: colors,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom" },
+        title: { display: true, text: "Expenses by Category" },
+      },
+    },
   });
 }
 
@@ -67,32 +72,31 @@ function renderMonthlyBarChart(months, incomeData, expenseData) {
   if (barChart) barChart.destroy();
 
   barChart = new Chart(document.getElementById("incomeExpenseChart"), {
-    type : "bar",
+    type: "bar",
     data: {
       labels: months,
       datasets: [
         {
-          label : "Income",
+          label: "Income",
           data: incomeData,
-          backgroundColor: "rgba(54, 162, 235, 0.7)"
+          backgroundColor: "rgba(54, 162, 235, 0.7)",
         },
         {
           label: "Expense",
           data: expenseData,
-          backgroundColor: "rgba(255, 99, 132, 0.7)"
-        }
-      ]
+          backgroundColor: "rgba(255, 99, 132, 0.7)",
+        },
+      ],
     },
     options: {
       responsive: true,
       plugins: {
-        legend : {position : "top"},
-        title: { display: true, text: "Monthly Income vs Expenses"}
-      }
-    }
+        legend: { position: "top" },
+        title: { display: true, text: "Monthly Income vs Expenses" },
+      },
+    },
   });
 }
-
 
 //Loader function for data
 function loadTransaction(userEmail) {
@@ -103,14 +107,15 @@ function loadTransaction(userEmail) {
     console.error("Failed to parse transactions:", e);
     data = [];
   }
-  
+
   //plain objects back to Transaction objects
-  let transactions = data.map(obj => Transaction.fromJSON(obj));
+  let transactions = data.map((obj) => Transaction.fromJSON(obj));
 
   const tableBody = document.getElementById("transactionTable");
   tableBody.innerHTML = "";
 
-  let income = 0, expense = 0;
+  let income = 0,
+    expense = 0;
 
   transactions.forEach((tx, index) => {
     if (tx.type === "Income") income += tx.amount;
@@ -128,11 +133,11 @@ function loadTransaction(userEmail) {
       </td>  
     `;
     tableBody.appendChild(row);
-  }); 
+  });
   // Category totals using a map
   let categoryTotals = new Map();
   //we store the amount per category
-  transactions.forEach(tx => {
+  transactions.forEach((tx) => {
     if (tx.type == "Expense") {
       let prev = categoryTotals.get(tx.category) || 0;
       categoryTotals.set(tx.category, prev + tx.amount);
@@ -170,11 +175,13 @@ function loadTransaction(userEmail) {
   const incomeData = sorted.map(([_, v]) => v.income);
   const expenseData = sorted.map(([_, v]) => v.expense);
 
-    
-
-  document.getElementById("incomeAmount").textContent = `$${income.toFixed(2)}`; 
-  document.getElementById("expenseAmount").textContent = `$${expense.toFixed(2)}`; 
-  document.getElementById("balanceAmount").textContent = `$${(income - expense).toFixed(2)}`; 
+  document.getElementById("incomeAmount").textContent = `$${income.toFixed(2)}`;
+  document.getElementById("expenseAmount").textContent = `$${expense.toFixed(
+    2
+  )}`;
+  document.getElementById("balanceAmount").textContent = `$${(
+    income - expense
+  ).toFixed(2)}`;
 
   //event listeners after render
   attachDeleteListeners(userEmail);
@@ -186,56 +193,64 @@ function loadTransaction(userEmail) {
 // Logic for deleting transaction
 
 function attachDeleteListeners(userEmail) {
-  document.querySelectorAll(".delete-btn").forEach(btn => {
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       let index = btn.getAttribute("data-id");
-      toast.confirm("Are you sure you want to delete this transaction?",() => {
-        let transactions = JSON.parse(localStorage.getItem(`transactions_${userEmail}`)) || [];
+      toast.confirm("Are you sure you want to delete this transaction?", () => {
+        let transactions =
+          JSON.parse(localStorage.getItem(`transactions_${userEmail}`)) || [];
         transactions.splice(index, 1);
-        localStorage.setItem(`transactions_${userEmail}`, JSON.stringify(transactions));
+        localStorage.setItem(
+          `transactions_${userEmail}`,
+          JSON.stringify(transactions)
+        );
         loadTransaction(userEmail);
         toast.success("Transaction deleted successfully!");
       });
-      
     });
-  })
+  });
 }
 
 //logic for editing transaction
 
 function attachEditListeners(userEmail) {
-  document.querySelectorAll(".edit-btn").forEach(btn => {
+  document.querySelectorAll(".edit-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       let index = btn.getAttribute("data-id");
 
-    let transactions = JSON.parse(localStorage.getItem(`transactions_${userEmail}`)) || [];
-    let tx = transactions[index];
+      let transactions =
+        JSON.parse(localStorage.getItem(`transactions_${userEmail}`)) || [];
+      let tx = transactions[index];
 
-    //populate with existing vals
-    document.getElementById("desc").value = tx.desc;
-    document.getElementById("amount").value = tx.amount;
-    document.getElementById("type").value = tx.type;
-    document.getElementById("category").value = tx.category;
-    document.getElementById("date").value = tx.date;
+      //populate with existing vals
+      document.getElementById("desc").value = tx.desc;
+      document.getElementById("amount").value = tx.amount;
+      document.getElementById("type").value = tx.type;
+      document.getElementById("category").value = tx.category;
+      document.getElementById("date").value = tx.date;
 
-    document.getElementById("transactionForm").onsubmit = function(e) {
-      e.preventDefault();
+      document.getElementById("transactionForm").onsubmit = function (e) {
+        e.preventDefault();
 
-      tx.desc = document.getElementById("desc").value;
-      tx.amount = parseFloat(document.getElementById("amount").value);
-      tx.type = document.getElementById("type").value;
-      tx.category = document.getElementById("category").value;
-      tx.date = document.getElementById("date").value;
-      // console.log({ desc, amount, type, category, date }); 
-      transactions[index] = tx;
-      localStorage.setItem(`transactions_${userEmail}`, JSON.stringify(transactions));
-      
-      loadTransaction(userEmail);
+        tx.desc = document.getElementById("desc").value;
+        tx.amount = parseFloat(document.getElementById("amount").value);
+        tx.type = document.getElementById("type").value;
+        tx.category = document.getElementById("category").value;
+        tx.date = document.getElementById("date").value;
+        // console.log({ desc, amount, type, category, date });
+        transactions[index] = tx;
+        localStorage.setItem(
+          `transactions_${userEmail}`,
+          JSON.stringify(transactions)
+        );
 
-      // Reset form & restore normal submit behavior
-      document.getElementById("transactionForm").reset();
-      document.getElementById("transactionForm").onsubmit = addTransactionHandler;
-    };  
+        loadTransaction(userEmail);
+
+        // Reset form & restore normal submit behavior
+        document.getElementById("transactionForm").reset();
+        document.getElementById("transactionForm").onsubmit =
+          addTransactionHandler;
+      };
     });
   });
 }
@@ -271,16 +286,18 @@ function addTransactionHandler(e) {
     return;
   }
 
-
-
   const currentUser = getCookie("loggedInUser");
 
   const newTxn = new Transaction(desc, amount, type, category, date);
 
-  let transactions = JSON.parse(localStorage.getItem(`transactions_${currentUser}`)) || [];
+  let transactions =
+    JSON.parse(localStorage.getItem(`transactions_${currentUser}`)) || [];
   transactions.push(newTxn.toJSON());
 
-  localStorage.setItem(`transactions_${currentUser}`, JSON.stringify(transactions));
+  localStorage.setItem(
+    `transactions_${currentUser}`,
+    JSON.stringify(transactions)
+  );
 
   loadTransaction(currentUser);
   document.getElementById("transactionForm").reset();
@@ -292,5 +309,3 @@ function addTransactionHandler(e) {
 }
 
 document.getElementById("transactionForm").onsubmit = addTransactionHandler;
-
-

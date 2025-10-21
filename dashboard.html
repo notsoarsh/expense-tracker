@@ -1,157 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expensify Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expensify Dashboard</title>
-  <!-- Bootstrap CSS -->
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard_style.css" />
+    <link rel="stylesheet" href="css/toast.css" />
+  </head>
 
-  <link rel="stylesheet" href="css/dashboard_style.css">
-  <link rel="stylesheet" href="css/toast.css">
-</head>
-
-<body class="bg-light">
-  <div id="app-loader" class="loader-overlay">
-    <div class="spinner"></div>
-  </div>
-
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: rgba(3,30,18,0.88);">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="#">Expensify</a>
-      <a href="groups.html">Groups</a>
-
-      <div class="d-flex">
-        <span class="navbar-text text-white me-3" id="userEmail">Welcome, User</span>
-        <button class="btn btn-outline-light btn-sm" id="logoutBtn">Logout</button>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container my-4">
-
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-      <div class="col-md-4">
-        <div class="card text-center shadow">
-          <div class="card-body">
-            <h5 class="card-title">Balance</h5>
-            <p class="card-text fs-4 text-primary" id="balanceAmount">$0.00</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card text-center shadow">
-          <div class="card-body">
-            <h5 class="card-title">Total Income</h5>
-            <p class="card-text fs-4 text-success" id="incomeAmount">$0.00</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card text-center shadow">
-          <div class="card-body">
-            <h5 class="card-title">Total Expenses</h5>
-            <p class="card-text fs-4 text-danger" id="expenseAmount">$0.00</p>
-          </div>
-        </div>
-      </div>
+  <body class="bg-light">
+    <div id="app-loader" class="loader-overlay">
+      <div class="spinner"></div>
     </div>
 
-    <!-- Charts Section -->
-    <div class="chart-container">
-      <section class="chart-section">
-        <h3>Expenses Breakdown</h3>
-        <div class="pie-chart-container">
-          <canvas id="expensesChart"></canvas>
-        </div>
-      </section>
+    <!-- Navbar -->
+    <nav
+      class="navbar navbar-expand-lg navbar-dark fixed-top"
+      style="background: rgba(3, 30, 18, 0.88)"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">Expensify</a>
+        <a href="groups.html">Groups</a>
 
-      <section class="chart-section">
-        <h3>Income vs Expenses</h3>
-        <div class="bar-chart-container">
-          <canvas id="incomeExpenseChart"></canvas>
+        <div class="d-flex">
+          <span class="navbar-text text-white me-3" id="userEmail"
+            >Welcome, User</span
+          >
+          <button class="btn btn-outline-light btn-sm" id="logoutBtn">
+            Logout
+          </button>
         </div>
-      </section>
-    </div>
+      </div>
+    </nav>
 
-    <div class="row">
-      <!-- Add Transaction Form -->
-      <div class="col-md-4">
-        <div class="card shadow">
-          <div class="card-body">
-            <h5 class="card-title">Add Transaction</h5>
-            <form id="transactionForm">
-              <div class="mb-2">
-                <input type="text" class="form-control" id="desc" placeholder="Description" required>
-              </div>
-              <div class="mb-2">
-                <input type="number" class="form-control" id="amount" placeholder="Amount" step="0.01" min="0.01" required>
-              </div>
-              <div class="mb-2">
-                <select class="form-select" id="type" required>
-                  <option value="Income">Income</option>
-                  <option value="Expense">Expense</option>
-                </select>
-              </div>
-              <div class="mb-2">
-                <select class="form-select" id="category" required>
-                  <option value="">-- Select Category --</option>
-                  <option value="Food">Food</option>
-                  <option value="Travel">Travel</option>
-                  <option value="Shopping">Shopping</option>
-                  <option value="Bills">Bills</option>
-                  <option value="Others">Others</option>
-                </select>
-              </div>
-              <div class="mb-2">
-                <input type="date" class="form-control" id="date" required>
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Add</button>
-            </form>
+    <div class="container my-4">
+      <!-- Summary Cards -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <div class="card text-center shadow">
+            <div class="card-body">
+              <h5 class="card-title">Balance</h5>
+              <p class="card-text fs-4 text-primary" id="balanceAmount">
+                $0.00
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center shadow">
+            <div class="card-body">
+              <h5 class="card-title">Total Income</h5>
+              <p class="card-text fs-4 text-success" id="incomeAmount">$0.00</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center shadow">
+            <div class="card-body">
+              <h5 class="card-title">Total Expenses</h5>
+              <p class="card-text fs-4 text-danger" id="expenseAmount">$0.00</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Transactions Table -->
-      <div class="col-md-8">
-        <div class="card shadow">
-          <div class="card-body">
-            <h5 class="card-title">Transaction History</h5>
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Description</th>
-                    <th>Amount</th>
-                    <th>Category</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="transactionTable">
-                  <!-- Transactions will go here -->
-                </tbody>
-              </table>
+      <!-- Charts Section -->
+      <div class="chart-container">
+        <section class="chart-section">
+          <h3>Expenses Breakdown</h3>
+          <div class="pie-chart-container">
+            <canvas id="expensesChart"></canvas>
+          </div>
+        </section>
+
+        <section class="chart-section">
+          <h3>Income vs Expenses</h3>
+          <div class="bar-chart-container">
+            <canvas id="incomeExpenseChart"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <div class="row">
+        <!-- Add Transaction Form -->
+        <div class="col-md-4">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title">Add Transaction</h5>
+              <form id="transactionForm">
+                <div class="mb-2">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="desc"
+                    placeholder="Description"
+                    required
+                  />
+                </div>
+                <div class="mb-2">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="amount"
+                    placeholder="Amount"
+                    step="0.01"
+                    min="0.01"
+                    required
+                  />
+                </div>
+                <div class="mb-2">
+                  <select class="form-select" id="type" required>
+                    <option value="Income">Income</option>
+                    <option value="Expense">Expense</option>
+                  </select>
+                </div>
+                <div class="mb-2">
+                  <select class="form-select" id="category" required>
+                    <option value="">-- Select Category --</option>
+                    <option value="Food">Food</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Others">Others</option>
+                  </select>
+                </div>
+                <div class="mb-2">
+                  <input type="date" class="form-control" id="date" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Add</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="col-md-8">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title">Transaction History</h5>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Amount</th>
+                      <th>Category</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactionTable">
+                    <!-- Transactions will go here -->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-  </div>
-
-  <!-- Scripts at bottom for better performance -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/loader.js"></script>
-  <script src="js/toast.js"></script>
-  <script src="js/transaction.js"></script>
-  <script src="js/dashboard.js"></script>
-
-</body>
-
+    <!-- Scripts at bottom for better performance -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/transaction.js"></script>
+    <script src="js/dashboard.js"></script>
+  </body>
 </html>
